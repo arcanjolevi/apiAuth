@@ -30,5 +30,17 @@ var findUser = async function(obj) {
     return exist;
 };
 
+var updateUser = async function(queryObj, updateObj) {
+    mongoose.connect(env.DB_URL, { useCreateIndex:true, useNewUrlParser: true, useUnifiedTopology: true });
+    
+    if(updateObj.password)
+        updateObj.password = await crypt.hash(updateObj.password, 10);
 
-module.exports = {insertUser, findUser};
+    await UserModel.updateOne(queryObj, updateObj);
+    
+    mongoose.disconnect();
+
+};
+
+
+module.exports = {insertUser, findUser, updateUser};

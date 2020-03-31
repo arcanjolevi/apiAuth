@@ -11,8 +11,8 @@ var config = {
         port: 465,
         secure: true,
         auth: {
-        user: "arcanjolevi@gmail.com",
-        pass: "cambio--24google"
+        user: "",
+        pass: ""
         },
         recovery_pass_theme: "Recuperar senha",
     }
