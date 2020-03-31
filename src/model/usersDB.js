@@ -8,7 +8,7 @@ var insertUser = async function(user) {
 
    
     user.password = await crypt.hash(user.password, 10);
-       
+    
     
     var data = new UserModel(user);
     var inserted = await data.save();

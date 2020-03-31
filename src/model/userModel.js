@@ -14,11 +14,15 @@ var userSchema = new Schema({
 		type: String,
 		unique: true,
 		lowercase: true,
-		required: true	
+		required: true
 	},
 	password: {
 		type: String,
 		required: true
+	},
+	createAt: {
+		type: Date,
+		default: Date.now
 	}
 
 }, { collection: 'user'});

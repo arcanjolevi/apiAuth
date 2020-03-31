@@ -13,10 +13,12 @@ const app = express();
 
 const auth = require('./routes/auth');
 
+const mail = require('./mail/mail');
 
-function generateToken( userID ){
+
+function generateToken( userID, time){
     return jwt.sign({ id: userID }, env.secret, {
-        expiresIn: env.TOKEN_TIME
+        expiresIn: time
     });
 }
 
@@ -42,7 +44,7 @@ app.post('/register/auth', async (req, res) =>{
 
         user.password = "";
 
-        var tok = generateToken(user._id);
+        var tok = generateToken(user._id, env.TOKEN_TIME);
 
         return res.send({user, token: tok});
     }catch(error){
@@ -65,7 +67,28 @@ app.post('/authenticate', async (req, res) => {
         return res.status(400).send({ error: "Invalidad Pasword"});
 
     user.password = "";
-    return res.send({ user , token: generateToken(user._id) });
+    return res.send({ user , token: generateToken(user._id, env.TOKEN_TIME) });
+});
+
+
+app.post('/forgot_password', async (req, res) => {
+    const email = req.body.email;
+
+    const user = await usersDB.findUser( {email: email} );   
+
+    if(!user)
+        return res.status(400).send({ error: "User not found"});
+    
+    const token = generateToken(user._id, env.RECOVERY_PASS_TIME);
+
+    
+    try {
+        await mail.sendRecoveryEmail(token, email, user.name);
+        return res.send({ Mensage: "Email enviado"});
+    } catch (error) {
+        console.log(error);
+        return res.send({ error: "Email not sent"});
+    }
 });
 
 app.listen(env.PORT, () => {
